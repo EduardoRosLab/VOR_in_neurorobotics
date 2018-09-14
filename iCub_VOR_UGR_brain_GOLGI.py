@@ -184,7 +184,7 @@ def create_brain():
 					VN_population,
 					sim.AllToAllConnector(),
 					receptor_type='AMPA',
-	#				synapse_type = sim.StaticSynapse(delay=1.0, weight=0.007))
+	#				synapse_type = sim.StaticSynapse(delay=1.0, weight=mf_vn_weights))
 					synapse_type = stdp_cos)
 
 
@@ -222,7 +222,7 @@ def create_brain():
 					PC_population,
 					sim.AllToAllConnector(),
 					receptor_type='AMPA',
-	#				synapse_type = sim.StaticSynapse(delay=1.0, weight=0.000))
+	#				synapse_type = sim.StaticSynapse(delay=1.0, weight=gc_pc_weights))
 					synapse_type = stdp_syn)
 
 

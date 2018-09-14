@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bibi xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.humanbrainproject.eu/SP10/2014/BIBI" xsi:schemaLocation="http://schemas.humanbrainproject.eu/SP10/2014/BIBI ../bibi_configuration.xsd">
+<bibi 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns="http://schemas.humanbrainproject.eu/SP10/2014/BIBI" xsi:schemaLocation="http://schemas.humanbrainproject.eu/SP10/2014/BIBI ../bibi_configuration.xsd">
   <timestep> 10 </timestep>
   <brainModel>
     <file>iCub_VOR_UGR_brain_GOLGI.py</file>
-    <populations population="record" xsi:type="Range" from="0" to="2800"/>
+    <populations population="record" xsi:type="Range" from="2200" to="2800"/>
     <populations population="MF" xsi:type="Range" from="0" to="100"/>
     <populations population="MF_pos" xsi:type="Range" from="0" to="50"/>
     <populations population="MF_vel" xsi:type="Range" from="50" to="100"/>
@@ -20,184 +22,14 @@
     <populations population="IO_antagonist" xsi:type="Range" from="2700" to="2800"/>
   </brainModel>
   <bodyModel assetPath="icub_model" customAsset="false">model.sdf</bodyModel>
+
   <!--<transferFunction xsi:type="PythonTransferFunction" src="csv_spike_monitor.py"/>-->
-  <!--<transferFunction xsi:type="PythonTransferFunction" src="csv_joint_state_monitor.py"/>-->
-  <!--<transferFunction xsi:type="PythonTransferFunction" src="csv_local_spike_monitor.py"/>-->
-  <transferFunction xsi:type="PythonTransferFunction">
-    #<![CDATA[
-    @nrp.NeuronMonitor(nrp.brain.record, nrp.spike_recorder)
-    def all_neurons_monitor(t):
-        return True
-    #]]>
-  </transferFunction>
 
-
-  <!--Input for the eyes: the total number of red pixels in the left/right image is used in each of the TFs-->
-  <!--Right image-->
-  <transferFunction xsi:type="PythonTransferFunction">
-    #<![CDATA[
-    import hbp_nrp_cle.tf_framework.tf_lib
-    from sensor_msgs.msg import JointState
-
-    @nrp.MapSpikeSource("MF_pos_activity", nrp.map_neurons(range(0,50), lambda i: nrp.brain.MF_pos[i]), nrp.poisson, delay = 1.0)
-    @nrp.MapSpikeSource("MF_vel_activity", nrp.map_neurons(range(0,50), lambda i: nrp.brain.MF_vel[i]), nrp.poisson, delay = 1.0)
-    @nrp.MapRobotSubscriber("joints", Topic("/robot/joints", JointState))
-    @nrp.Robot2Neuron()
-    def sensory_activity(t, MF_pos_activity, MF_vel_activity, joints):
-
-
-
-        joints = joints.value
-        head_pos = joints.position[joints.name.index('neck_yaw')]
-        head_vel = joints.velocity[joints.name.index('neck_yaw')]
-        
-        head_pos = ((head_pos + 0.8) / 1.6)
-        head_vel = ((head_vel + 0.8 * 2 * 3.14) / (1.6 * 2 * 3.14))
-
-        if head_pos > 1.0:
-            head_pos = 1.0
-        elif head_pos < 0.0:
-            head_pos = 0.0
-        if head_vel > 1.0:
-            head_vel = 1.0
-        elif head_vel < 0.0:
-            head_vel = 0.0
-
-
-        min_rate = 0.0
-        max_rate = 600.0
-        sigma = 0.02
-
-
-        for i in range(50):
-        	mean = float(i) / 50.0 + 0.01
-        	gaussian = np.exp(-((head_pos - mean) * (head_pos - mean))/(2.0 * sigma * sigma))
-        	MF_pos_activity[i].rate = min_rate + gaussian * (max_rate - min_rate)
-
-        for i in range(50):
-        	mean = float(i) / 50.0 + 0.01
-        	gaussian = np.exp(-((head_vel - mean) * (head_vel - mean))/(2.0 * sigma * sigma))
-        	MF_vel_activity[i].rate = min_rate + gaussian * (max_rate - min_rate)
-    #]]>
-  </transferFunction>
-
-  <transferFunction xsi:type="PythonTransferFunction">
-    #<![CDATA[
-    import hbp_nrp_cle.tf_framework.tf_lib
-    from sensor_msgs.msg import JointState
-    @nrp.MapSpikeSource("IO_agonist_activity", nrp.map_neurons(range(0,100), lambda i: nrp.brain.IO_agonist[i]), nrp.poisson, delay = 20.0)
-    @nrp.MapSpikeSource("IO_antagonist_activity", nrp.map_neurons(range(0,100), lambda i: nrp.brain.IO_antagonist[i]), nrp.poisson, delay = 20.0)
-    @nrp.MapRobotSubscriber("joints", Topic("/robot/joints", JointState))
-    @nrp.Robot2Neuron()
-    def error_activity(t, IO_agonist_activity, IO_antagonist_activity, joints):
-        def compute_P_error(kp, head_position, eye_position):
-            error = kp * (head_position + eye_position)
-            return error
-        def compute_D_error(kd, head_velocity, eye_velocity):
-            error = kd * (head_velocity + eye_velocity)
-            return error
-
-        MAX_AMPLITUDE = 0.8
-
-        joints = joints.value
-        head_pos = joints.position[joints.name.index('neck_yaw')]
-        eye_pos = joints.position[joints.name.index('eye_version')]
-        kp=15.0
-        position_error = compute_P_error(kp, head_pos, eye_pos)
-        head_vel = joints.velocity[joints.name.index('neck_yaw')]
-        eye_vel = joints.velocity[joints.name.index('eye_version')]
-        kd=15.0
-        velocity_error = compute_D_error(kd, head_vel, eye_vel)
-
-        error=(position_error * 0.1 + (velocity_error/(2.0*3.141592)) * 0.9)/MAX_AMPLITUDE
-
-        min_rate = 1.0
-        max_rate = 25.0
-        low_neuron_ID_threshold = abs(error) * 100.0
-        up_neuron_ID_threshold = low_neuron_ID_threshold - 100.0
-        rate = []
-        for i in range (100):
-            if(i < up_neuron_ID_threshold):
-                rate.append(max_rate)
-            elif(i<low_neuron_ID_threshold):
-                aux_rate=max_rate - (max_rate-min_rate)*((i - up_neuron_ID_threshold)/(low_neuron_ID_threshold - up_neuron_ID_threshold))
-                rate.append(aux_rate)
-            else:
-                rate.append(min_rate)
-        if error>=0.0:
-            IO_agonist_activity.rate=min_rate
-            IO_antagonist_activity.rate=rate
-        else:
-            IO_antagonist_activity.rate=min_rate
-            IO_agonist_activity.rate=rate
-
-
-    #]]>
-  </transferFunction>
-
-
-  <transferFunction xsi:type="PythonTransferFunction">
-    #<![CDATA[
-    import hbp_nrp_cle.tf_framework as nrp
-    from hbp_nrp_cle.robotsim.RobotInterface import Topic
-    import std_msgs.msg
-    from std_msgs.msg import Float64
-    @nrp.MapSpikeSink("agonist_neuron", nrp.brain.VN_agonist[slice(0,100,1)], nrp.population_rate, tau_fall = 20.0, tau_rise = 10.0)
-    @nrp.MapSpikeSink("antagonist_neuron", nrp.brain.VN_antagonist[slice(0,100,1)], nrp.population_rate, tau_fall = 20.0, tau_rise = 10.0)
-    #@nrp.MapSpikeSink("agonist_neuron", nrp.brain.VN_agonist[slice(0,100,1)], nrp.leaky_integrator_alpha, delay = 1.0, cm = 13.6)
-    #@nrp.MapSpikeSink("antagonist_neuron", nrp.brain.VN_antagonist[slice(0,100,1)], nrp.leaky_integrator_alpha, delay = 1.0, cm = 13.6)
-    @nrp.Neuron2Robot(Topic('/robot/eye_version/vel', Float64))
-    def eye_twist(t, agonist_neuron, antagonist_neuron):
-        MAX_AMPLITUDE = 0.8
-        eye_velocity=((agonist_neuron.rate - antagonist_neuron.rate)/(100.0*85.0))*MAX_AMPLITUDE*2.0*3.141592*1.55
-        
-        #clientLogger.info(t, agonist_neuron.rate, antagonist_neuron.rate, eye_velocity)
-        if abs(eye_velocity)>MAX_AMPLITUDE*2.0*3.141592*1.55*1.2:
-            sign=eye_velocity/(abs(eye_velocity))# + or -
-            eye_velocity=MAX_AMPLITUDE*2.0*3.141592*1.5*1.2*sign   
-
-        return std_msgs.msg.Float64(eye_velocity)
-    #]]>
-
-  </transferFunction>
-
-
-
-
-
-
-
-
-   <transferFunction xsi:type="PythonTransferFunction">
-    #<![CDATA[
-    import hbp_nrp_cle.tf_framework as nrp
-    from hbp_nrp_cle.robotsim.RobotInterface import Topic
-    from sensor_msgs.msg import JointState
-    import std_msgs.msg
-    from std_msgs.msg import Float64
-    @nrp.MapRobotSubscriber("joints", Topic("/robot/joints", JointState))
-    @nrp.Neuron2Robot(Topic('/robot/neck_yaw/vel', Float64))
-    def head_twist(t, joints):
-     
-        MAX_AMPLITUDE = 0.8
-        RELATIVE_AMPLITUDE = 1.0
-        
-        joints = joints.value
-        head_pos = joints.position[joints.name.index('neck_yaw')]
-        
-        desired_speed=-np.cos(t*2*np.pi)*MAX_AMPLITUDE*RELATIVE_AMPLITUDE*2.0*3.141592
-        desired_pos=-np.sin(t*2*np.pi)*MAX_AMPLITUDE*RELATIVE_AMPLITUDE
-        
-        if desired_speed > 0:
-            desired_speed *= (1+(desired_pos - head_pos)*2)
-        else:
-            desired_speed *= (1-(desired_pos - head_pos)*2)
-        
-
-        return std_msgs.msg.Float64(desired_speed)
-    #]]>
-
-  </transferFunction>
+  <transferFunction xsi:type="PythonTransferFunction" src="all_neurons_monitor.py"/>
+  <transferFunction xsi:type="PythonTransferFunction" src="head_twist.py"/>
+  <transferFunction xsi:type="PythonTransferFunction" src="sensory_activity.py"/>
+  <transferFunction xsi:type="PythonTransferFunction" src="eye_twist.py"/>
+  <transferFunction xsi:type="PythonTransferFunction" src="error_activity.py"/>
 
 
 </bibi>
