@@ -14,11 +14,11 @@ In this work we have implemented a spiking neural model of a cerebellum includin
 
 * Install the NRP using the nrp_installer script (http://www.neurorobotics.net/local_install.html)
 * Upgrade the pyNN version in the backend:
-	./nrp_installer connect_backend
-	pip install --upgrade pyNN
+./nrp_installer connect_backend
+pip install --upgrade pyNN
 * Launch the NRP
-	./nrp_installer start
-	Open the url "http://localhost:9000/#/esv-private". user: nrpuser; password:password
+./nrp_installer start
+Open the url "http://localhost:9000/#/esv-private". user: nrpuser; password:password
 * Create a new experiment and upload all the files in this folder.
 * Launch the iCub_VOR_UGR experiment.
 
