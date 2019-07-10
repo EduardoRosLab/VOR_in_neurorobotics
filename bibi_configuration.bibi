@@ -1,35 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<bibi 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xmlns="http://schemas.humanbrainproject.eu/SP10/2014/BIBI" xsi:schemaLocation="http://schemas.humanbrainproject.eu/SP10/2014/BIBI ../bibi_configuration.xsd">
-  <timestep> 10 </timestep>
-  <brainModel>
-    <file>iCub_VOR_UGR_brain_GOLGI.py</file>
-    <populations population="record" xsi:type="Range" from="2200" to="2800"/>
-    <populations population="MF" xsi:type="Range" from="0" to="100"/>
-    <populations population="MF_pos" xsi:type="Range" from="0" to="50"/>
-    <populations population="MF_vel" xsi:type="Range" from="50" to="100"/>
-    <populations population="GOC" xsi:type="Range" from="100" to="200"/>
-    <populations population="GC" xsi:type="Range" from="200" to="2200"/>
-    <populations population="PC" xsi:type="Range" from="2200" to="2400"/>
-    <populations population="PC_agonist" xsi:type="Range" from="2200" to="2300"/>
-    <populations population="PC_antagonist" xsi:type="Range" from="2300" to="2400"/>
-    <populations population="VN" xsi:type="Range" from="2400" to="2600"/>
-    <populations population="VN_agonist" xsi:type="Range" from="2400" to="2500"/>
-    <populations population="VN_antagonist" xsi:type="Range" from="2500" to="2600"/>
-    <populations population="IO" xsi:type="Range" from="2600" to="2800"/>
-    <populations population="IO_agonist" xsi:type="Range" from="2600" to="2700"/>
-    <populations population="IO_antagonist" xsi:type="Range" from="2700" to="2800"/>
-  </brainModel>
-  <bodyModel assetPath="icub_model" customAsset="false">model.sdf</bodyModel>
+<ns1:bibi 
+  xmlns:ns1="http://schemas.humanbrainproject.eu/SP10/2014/BIBI" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ns1:timestep> 10 </ns1:timestep>
+  <ns1:brainModel>
+    <ns1:file>iCub_VOR_UGR_brain_GOLGI.py</ns1:file>
+    <ns1:populations population="record" xsi:type="ns1:Range" from="2200" to="2800"/>
+    <ns1:populations population="MF" xsi:type="ns1:Range" from="0" to="100"/>
+    <ns1:populations population="MF_pos" xsi:type="ns1:Range" from="0" to="50"/>
+    <ns1:populations population="MF_vel" xsi:type="ns1:Range" from="50" to="100"/>
+    <ns1:populations population="GOC" xsi:type="ns1:Range" from="100" to="200"/>
+    <ns1:populations population="GC" xsi:type="ns1:Range" from="200" to="2200"/>
+    <ns1:populations population="PC" xsi:type="ns1:Range" from="2200" to="2400"/>
+    <ns1:populations population="PC_agonist" xsi:type="ns1:Range" from="2200" to="2300"/>
+    <ns1:populations population="PC_antagonist" xsi:type="ns1:Range" from="2300" to="2400"/>
+    <ns1:populations population="VN" xsi:type="ns1:Range" from="2400" to="2600"/>
+    <ns1:populations population="VN_agonist" xsi:type="ns1:Range" from="2400" to="2500"/>
+    <ns1:populations population="VN_antagonist" xsi:type="ns1:Range" from="2500" to="2600"/>
+    <ns1:populations population="IO" xsi:type="ns1:Range" from="2600" to="2800"/>
+    <ns1:populations population="IO_agonist" xsi:type="ns1:Range" from="2600" to="2700"/>
+    <ns1:populations population="IO_antagonist" xsi:type="ns1:Range" from="2700" to="2800"/>
+  </ns1:brainModel>
+  <ns1:bodyModel robotId="icub">icub_model/model.sdf</ns1:bodyModel>  
 
   <!--<transferFunction xsi:type="PythonTransferFunction" src="csv_spike_monitor.py"/>-->
 
-  <transferFunction xsi:type="PythonTransferFunction" src="all_neurons_monitor.py"/>
-  <transferFunction xsi:type="PythonTransferFunction" src="head_twist.py"/>
-  <transferFunction xsi:type="PythonTransferFunction" src="sensory_activity.py"/>
-  <transferFunction xsi:type="PythonTransferFunction" src="eye_twist.py"/>
-  <transferFunction xsi:type="PythonTransferFunction" src="error_activity.py"/>
+  <ns1:transferFunction xsi:type="ns1:PythonTransferFunction" src="all_neurons_monitor.py"/>
+  <ns1:transferFunction xsi:type="ns1:PythonTransferFunction" src="head_twist.py"/>
+  <ns1:transferFunction xsi:type="ns1:PythonTransferFunction" src="sensory_activity.py"/>
+  <ns1:transferFunction xsi:type="ns1:PythonTransferFunction" src="eye_twist.py"/>
+  <ns1:transferFunction xsi:type="ns1:PythonTransferFunction" src="error_activity.py"/>
 
 
-</bibi>
+</ns1:bibi>

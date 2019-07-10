@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ExD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xmlns="http://schemas.humanbrainproject.eu/SP10/2014/ExDConfig"
-     xsi:schemaLocation="http://schemas.humanbrainproject.eu/SP10/2014/ExDConfig ../ExDConfFile.xsd">
+<ExD 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  xmlns="http://schemas.humanbrainproject.eu/SP10/2014/ExDConfig" xsi:schemaLocation="http://schemas.humanbrainproject.eu/SP10/2014/ExDConfig ../ExDConfFile.xsd">
     <name>iCub VOR UGR</name>
     <thumbnail>ExDiCub_VOR_UGR.png</thumbnail>
     <description>The University of Granada (UGR) performs an adaptative VOR experiment using a spiking cerebellar model and an iCub robot.</description>
@@ -9,9 +8,9 @@
     <timeout>86400</timeout>
     <configuration type="3d-settings" src="ExDiCub_VOR_UGR.3ds"/>
     <maturity>production</maturity>
-    <environmentModel src="virtual_room_tracking_icub.sdf">
-        <robotPose x="0.0" y="0.0" z="0.644" ux="0.0" uy="0.0" uz="-0.70710666564709435" theta="0.70710689672598181"/>
-    </environmentModel>
+  <environmentModel src="virtual_room_tracking_icub.sdf">
+    <robotPose robotId="icub" x="0.0" y="0.0" z="0.644" roll="0.0" pitch="0.0" yaw="-1.570796" />
+  </environmentModel>
     <bibiConf src="bibi_configuration.bibi"/>
     <cameraPose>
         <cameraPosition x="2.1504202465717563" y="1.2381462778435453" z="1.3380507195673994"/>

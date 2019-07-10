@@ -3,8 +3,8 @@ from hbp_nrp_cle.robotsim.RobotInterface import Topic
 from sensor_msgs.msg import JointState
 import std_msgs.msg
 from std_msgs.msg import Float64
-@nrp.MapRobotSubscriber("joints", Topic("/robot/joints", JointState))
-@nrp.Neuron2Robot(Topic('/robot/neck_yaw/vel', Float64))
+@nrp.MapRobotSubscriber("joints", Topic("/icub/joints", JointState))
+@nrp.Neuron2Robot(Topic('/icub/neck_yaw/vel', Float64))
 def head_twist (t, joints):
      
     MAX_AMPLITUDE = 0.8

@@ -3,7 +3,7 @@ from sensor_msgs.msg import JointState
 
 @nrp.MapSpikeSource("MF_pos_activity", nrp.map_neurons(range(0,50), lambda i: nrp.brain.MF_pos[i]), nrp.poisson, delay = 1.0)
 @nrp.MapSpikeSource("MF_vel_activity", nrp.map_neurons(range(0,50), lambda i: nrp.brain.MF_vel[i]), nrp.poisson, delay = 1.0)
-@nrp.MapRobotSubscriber("joints", Topic("/robot/joints", JointState))
+@nrp.MapRobotSubscriber("joints", Topic("/icub/joints", JointState))
 @nrp.Robot2Neuron()
 def sensory_activity (t, MF_pos_activity, MF_vel_activity, joints):
     joints = joints.value

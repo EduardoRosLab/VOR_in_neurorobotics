@@ -2,7 +2,7 @@ import hbp_nrp_cle.tf_framework.tf_lib
 from sensor_msgs.msg import JointState
 @nrp.MapSpikeSource("IO_agonist_activity", nrp.map_neurons(range(0,100), lambda i: nrp.brain.IO_agonist[i]), nrp.poisson, delay = 20.0)
 @nrp.MapSpikeSource("IO_antagonist_activity", nrp.map_neurons(range(0,100), lambda i: nrp.brain.IO_antagonist[i]), nrp.poisson, delay = 20.0)
-@nrp.MapRobotSubscriber("joints", Topic("/robot/joints", JointState))
+@nrp.MapRobotSubscriber("joints", Topic("/icub/joints", JointState))
 @nrp.Robot2Neuron()
 def error_activity(t, IO_agonist_activity, IO_antagonist_activity, joints):
     def compute_P_error(kp, head_position, eye_position):
